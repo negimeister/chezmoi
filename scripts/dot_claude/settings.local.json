@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(getfacl /dev/uinput)",
+      "Bash(echo \"--- exit:$?\")",
+      "Bash(systemctl --user list-unit-files)",
+      "Bash(systemctl list-unit-files *)",
+      "Bash(ydotool type *)",
+      "Bash(ydotool --version)"
+    ]
+  }
+}

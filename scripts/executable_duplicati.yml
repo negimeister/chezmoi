@@ -1,0 +1,19 @@
+---
+version: "2.1"
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=Europe/London
+      - CLI_ARGS= #optional
+    volumes:
+      - /home/ngmstr/.duplicati:/config
+      - /tmp:/backups
+      - /home/ngmstr:/source
+      - /home/ngmstr/.ssh/id_meeks_sftp_ngmstr:/key
+    ports:
+      - 8200:8200
+    restart: unless-stopped

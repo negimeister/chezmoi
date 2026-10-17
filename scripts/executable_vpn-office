@@ -1,0 +1,30 @@
+#!/bin/bash
+
+delete_wg0() {
+  echo "Deleting old connections"
+  for line in $(nmcli connection show | grep -oE 'wg0(\([0-9]*\))?'); do
+        echo "Deleting $line"
+        nmcli connection delete "$line"
+   done
+}
+
+
+
+source ~/.config/user-dirs.dirs
+firefox-developer-edition "https://new-world-vpn.ubique.ch/static/index.html?vpn=ubique_office"
+for i in {1..60}; do
+  if [ -f "$HOME/Downloads/wg0.conf" ]; then
+    delete_wg0
+    nmcli connection import type wireguard file "$HOME/Downloads/wg0.conf"
+    nmcli connection modify wg0 connection.autoconnect false
+    rm "$HOME/Downloads/wg0.conf"
+    echo "Connection imported"
+    exit
+  fi
+  sleep 1
+done
+
+echo "Gave up after 60 seconds"
+
+
+  

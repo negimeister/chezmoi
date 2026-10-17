@@ -1,0 +1,1 @@
+2026-08-14_11:40:18    ngmstr    supermicro-upda -i 192.168.88.223 -u ***** -p ***** -c MountIsoImage --image_url http://images.hetzner-dev.ubique.ch:30573/rescue.iso

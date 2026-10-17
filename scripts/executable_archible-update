@@ -1,0 +1,87 @@
+#!/bin/bash
+set -xeuo pipefail
+
+# Default base URL
+BASE_URL="archible.ime.ist"
+POSITIONAL_ARGS=()
+INSTALL=false
+DIRECT=false
+
+# Parse arguments
+for arg in "$@"; do
+  case $arg in
+    --direct)
+      BASE_URL="archible.leeklabs.download"
+      DIRECT=true
+      shift
+      ;;
+    --install)
+      INSTALL=true
+      shift
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$arg")
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 [--install] [--direct] <pool_name>"
+  exit 1
+fi
+
+POOL="$1"
+PARENT="$POOL/root"
+IMAGE_PATH="/tmp/archible.sq"
+USER=$(ykuser)
+PASS=$(ykpass archible-web)
+AUTH="-u $USER:$PASS"
+
+if $INSTALL; then
+  echo "Ensuring parent dataset exists"
+  if ! sudo zfs list "$PARENT" > /dev/null 2>&1; then
+    sudo zfs create -o canmount=off -o mountpoint=none "$PARENT"
+  else
+    sudo zfs set canmount=off "$PARENT"
+  fi
+  VERSION="manual-install-$(date +%s)"
+else
+  echo "Getting Latest Version"
+  VERSION=$(curl -fsSL "https://$BASE_URL/latest" $AUTH)
+  if [ "$VERSION" == "$(cat /archible_version 2>/dev/null || echo "")" ]; then
+    echo "No update found"
+    exit 0
+  fi
+fi
+
+echo "Target version: $VERSION"
+TARGET="$PARENT/$VERSION"
+
+# Download if needed
+if [ ! -f "$IMAGE_PATH" ]; then
+  echo "Downloading Root Image"
+  sudo curl -fL "https://$BASE_URL/archible-desktop.sq" $AUTH -o "$IMAGE_PATH"
+else
+  echo "Image already downloaded at $IMAGE_PATH"
+fi
+
+# Destroy existing dataset if it exists
+if sudo zfs list "$TARGET" > /dev/null 2>&1; then
+  echo "Destroying existing dataset $TARGET"
+  sudo zfs destroy -r "$TARGET"
+fi
+
+# Create dataset and extract image
+sudo zfs create -o mountpoint=/archible-$VERSION "$TARGET"
+sudo pacman -S --noconfirm squashfs-tools
+sudo unsquashfs -d /archible-$VERSION "$IMAGE_PATH"
+
+# Finalize dataset
+sudo zfs unmount "$TARGET"
+sudo zfs set canmount=noauto "$TARGET"
+sudo zfs set org.zfsbootmenu:commandline='bgrt_disable squash="archible-2024-05-17_02-31.sq" i915.enable_psr=1 nvme.noacpi=1 rw' "$TARGET"
+sudo zfs set org.zfsbootmenu:rootprefix="zfs=" "$TARGET"
+sudo zfs snap "$TARGET@init"
+sudo zpool set bootfs="$TARGET" "$POOL"

@@ -1,0 +1,3 @@
+#!/bin/bash
+find . -name "*.java" | parallel google-java-format --replace --aosp --skip-sorting-imports --skip-reflowing-long-strings {}
+find . -name "*.java" | parallel google-java-format --replace --aosp --skip-sorting-imports --skip-reflowing-long-strings {}

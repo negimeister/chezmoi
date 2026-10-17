@@ -1,0 +1,10 @@
+#!/bin/bash
+
+IDF_HOST=negimeister.chickenkiller.com
+IDF_PORT=8022
+IDF_USER=komari
+
+rsync --relative $1 -v -r -e "ssh -p $IDF_PORT" . $IDF_USER@$IDF_HOST:/tmp/ && 
+ssh -t $IDF_USER@$IDF_HOST -p $IDF_PORT "bash --login -c \"esptool.py \"" && 
+rsync -v -r -e "ssh -p $IDF_PORT" $IDF_USER@$IDF_HOST:/tmp/$(pwd) .
+

@@ -1,0 +1,14 @@
+#!/bin/bash
+for path in "$@"; do
+  find "$path" -type f -print0 |
+  while IFS= read -r -d '' file; do
+    echo "file is $file"
+    RP=`realpath "$file"`
+    echo "RP is $RP"
+    DIR=`dirname "$RP"`
+    TGT="/data/local_overlay$DIR"
+    sudo mkdir -p "$TGT"
+    sudo chown --reference="$DIR" "$TGT"
+    cp "$RP" "$TGT"
+  done
+done

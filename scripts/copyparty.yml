@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copyparty
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: copyparty
+  template:
+    metadata:
+      labels:
+        app: copyparty
+    spec:
+      containers:
+        - name: copyparty
+          image: copyparty/ac:latest
+          args: ['-v', '.::rw', '-p 80']
+          ports:
+            - containerPort: 3923
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          volumeMounts:
+            - name: copyparty-data
+              mountPath: /w
+
+        - name: tailscale
+          image: tailscale/tailscale:stable
+          securityContext:
+            capabilities:
+              add: ['NET_ADMIN', 'NET_RAW']
+          env:
+            - name: TS_AUTHKEY
+              value: '4d8881684c662b161d9e2c2e360f1bfc44ed37f740df5d97'
+            - name: TS_LOGIN_SERVER
+              value: 'https://headscale.ubique.rocks'
+            - name: TS_STATE_DIR
+              value: '/var/lib/tailscale'
+          volumeMounts:
+            - name: tailscale-state
+              mountPath: /var/lib/tailscale
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
+          command: ['tailscaled']
+          args: ['--tun=userspace-networking', '--socks5-server=localhost:1055']
+
+      volumes:
+        - name: copyparty-data
+          emptyDir: {}
+        - name: tailscale-state
+          emptyDir: {}
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: copyparty
+spec:
+  selector:
+    app: copyparty
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80r-- 89
+  type: ClusterIP

@@ -1,0 +1,37 @@
+#!/bin/bash
+#!/bin/bash
+
+csv_file="$1"
+folder_of_flac_files="$2"
+
+IFS=$'\n'
+index=1
+
+for line in $(cat "$csv_file"); do
+    title=$(echo $line | cut -d';' -f2)
+    artist=$(echo $line | cut -d';' -f3)
+    album=$(echo $line | cut -d';' -f4)
+
+    echo "title: $title artist: $artist album: $album"    
+    flac_file_name=$(printf "%02d Track %02d.flac" $index $index)
+    full_flac_path="$folder_of_flac_files/$flac_file_name"
+    
+    # Remove existing tags
+    metaflac --remove-tag=TITLE \
+             --remove-tag=ARTIST \
+             --remove-tag="ALBUM ARTIST" \
+             --remove-tag=ALBUM \
+             --remove-tag=DISCNUMBER \
+             --remove-tag=TRACKNUMBER \
+             "$full_flac_path"
+    
+    # Set new tags
+    metaflac --set-tag="TITLE=$title" \
+             --set-tag="ARTIST=$artist" \
+             --set-tag="ALBUM=$album" \
+             --set-tag="TRACKNUMBER=$index" \
+             "$full_flac_path"
+    
+    let "index++"
+done
+

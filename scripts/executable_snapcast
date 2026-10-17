@@ -1,0 +1,6 @@
+#!/bin/bash
+MODULE=$(pactl load-module module-null-sink sink_name=snapcast)
+pacmd update-sink-proplist snapcast device.description=SnapCast
+gst-launch-1.0 pulsesrc device=snapcast.monitor ! audioresample ! audioconvert ! audio/x-raw,rate=48000,channels=2,format=S16LE ! wavenc ! tcpclientsink host=192.168.39.2 port=3900
+pactl unload-module $MODULE
+pactl set-default-sink snapcast

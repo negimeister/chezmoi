@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copyparty
+  labels:
+    app: copyparty
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: copyparty
+  template:
+    metadata:
+      labels:
+        app: copyparty
+    spec:
+      containers:
+        - name: copyparty
+          image: copyparty/ac:latest
+          args:
+            - "-p"
+            - "3923"
+            - "-v"
+            - "/mnt/headscale::A"     # serve the mount read-only to anyone
+          ports:
+            - containerPort: 3923
+          volumeMounts:
+            - name: headscale-data
+              mountPath: /mnt/headscale
+              readOnly: false
+      volumes:
+        - name: headscale-data
+          persistentVolumeClaim:
+            claimName: headscale-pvc

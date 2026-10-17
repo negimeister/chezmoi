@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Check if we have a bearer token in the environment variable
+if [ -z "$BEARER_TOKEN" ]; then
+    echo "Error: BEARER_TOKEN environment variable is not set."
+    exit 1
+fi
+
+# Check if bc utility is available
+if ! command -v bc &> /dev/null; then
+    echo "Error: 'bc' utility is required but not installed."
+    exit 1
+fi
+
+# Hardcoded mapping of issue names to issue IDs
+declare -A ISSUE_MAP
+ISSUE_MAP=( ["sbb-stories"]=27179 ["sbb-bugs"]=27180 ["issueName3"]=91011 )
+
+AUTHOR_ACCOUNT_ID="5db18a57af604e0db364d407"
+
+# Check if issueName, timeSpentSeconds and description are provided
+if [ $# -lt 3 ]; then
+    echo "Usage: $0 <issueName> <timeSpentHours> <description> [startDate]"
+    exit 1
+fi
+
+ISSUE_NAME="$1"
+if [[ ! -v "ISSUE_MAP[$ISSUE_NAME]" ]]; then
+    echo "Error: No matching issue ID found for issue name '$ISSUE_NAME'"
+    exit 1
+fi
+
+ISSUE_ID=${ISSUE_MAP["$ISSUE_NAME"]}
+TIME_SPENT_SECONDS=$(echo "$2 * 3600" | bc | xargs printf "%1.0f") # Convert decimal hours to seconds
+DESCRIPTION="$3"
+
+# If startDate is provided, use it. Otherwise, use today's date
+if [ -n "$4" ]; then
+    START_DATE="$4"
+else
+    START_DATE=$(date +"%Y-%m-%d")
+fi
+
+# Prepare JSON payload
+JSON_PAYLOAD=$(cat <<EOF
+{
+  "authorAccountId": "$AUTHOR_ACCOUNT_ID",
+  "issueId": "$ISSUE_ID",
+  "startDate": "$START_DATE",
+  "timeSpentSeconds": $TIME_SPENT_SECONDS,
+  "description": "$DESCRIPTION"
+}
+EOF
+)
+
+# Make the POST request using curl
+curl -X POST https://api.tempo.io/4/worklogs \
+     -H "Authorization: Bearer $BEARER_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d "$JSON_PAYLOAD"

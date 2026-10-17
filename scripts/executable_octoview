@@ -1,0 +1,2 @@
+#!/bin/bash
+cvlc "http://homeassistant.local:8000/?action=stream" --video-filter "rotate{angle=180}" --play-and-exit

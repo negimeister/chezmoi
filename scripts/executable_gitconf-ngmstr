@@ -1,0 +1,4 @@
+#!/bin/bash
+git config user.name Negimeister
+git config user.email leeklabsinternational@gmail.com
+git config core.sshCommand "ssh -i ~/.ssh/id_yubi_c -i ~/.ssh/id_yubi_c_nfc -i ~/.ssh/id_yubi_nano -i ~/.ssh/id_yubi_a_nfc -F /dev/null"

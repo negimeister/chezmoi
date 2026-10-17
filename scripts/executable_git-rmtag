@@ -1,0 +1,5 @@
+#!/bin/bash
+((!$#)) && echo No tag name, command ignored! && exit 1
+git tag -d $1
+git push origin -d $1
+gh release delete $1

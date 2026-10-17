@@ -1,0 +1,1 @@
+curl -F f=@"$1" 'https://copy.ime.ist/?want=url'
