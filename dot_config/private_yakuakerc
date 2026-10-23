@@ -1,0 +1,13 @@
+[Desktop Entry]
+DefaultProfile=Profile 1.profile
+
+[Dialogs]
+ConfirmQuit=false
+FirstRun=false
+
+[Shortcuts]
+close-session=none
+
+[Window]
+ShowTabBar=false
+ShowTitleBar=false
