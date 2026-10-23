@@ -1,0 +1,8 @@
+[Layout]
+DisplayNames=
+LayoutList=jpdv
+Options=ctrl:swap_lalt_lctl,caps:shift,shift:both_capslock_cancel
+ResetOldOptions=true
+Use=true
+VariantList=dvorak
+
