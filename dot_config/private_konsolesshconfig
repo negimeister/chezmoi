@@ -1,0 +1,92 @@
+[Global plugin config]
+manageProfile=false
+
+[SSH Config][18.193.175.55]
+hostname=18.193.175.55
+identifier=18.193.175.55
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=
+useSshConfig=true
+username=
+
+[SSH Config][192.168.39.153]
+hostname=192.168.39.153
+identifier=192.168.39.153
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=~/.secrets/ssh/id_hetzner_dev
+useSshConfig=true
+username=root
+
+[SSH Config][asimporterdev]
+hostname=asimporterdev
+identifier=asimporterdev
+importedFromSshConfig=true
+port=22
+profileName=
+sshkey=~/.secrets/ssh/AS-AWS-FRA-Key.pem
+useSshConfig=true
+username=ec2-user
+
+[SSH Config][box]
+hostname=code-teto.ubinfra.lan
+identifier=box
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=
+useSshConfig=true
+username=appuser
+
+[SSH Config][dev-controlplane-01.ubinfra.lan]
+hostname=dev-controlplane-01.ubinfra.lan
+identifier=dev-controlplane-01.ubinfra.lan
+importedFromSshConfig=true
+port=
+profileName=
+sshkey=
+useSshConfig=true
+username=
+
+[SSH Config][luka]
+hostname=ime.ist
+identifier=luka
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=
+useSshConfig=true
+username=root
+
+[SSH Config][ops-vm]
+hostname=ops-vm
+identifier=ops-vm
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=~/.secrets/ssh/wireguard-vpn-key.pem
+useSshConfig=true
+username=ec2-user
+
+[SSH Config][oringe]
+hostname=oringe.ubinfra.lan
+identifier=oringe
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=
+useSshConfig=true
+username=root
+
+[SSH Config][ub-github]
+hostname=github.com
+identifier=ub-github
+importedFromSshConfig=true
+port=
+profileName=
+sshkey=~/.secrets/ssh/id_gstoehl
+useSshConfig=true
+username=git
